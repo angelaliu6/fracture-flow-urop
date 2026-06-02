@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# MATLAB autosave and data files
+*.asv
+*.mat
+
+# Windows alternate data streams
+*:Zone.Identifier
+
+# Temporary Office files
+~$*
+
+# Raw simulation output data (too large for git)
+urop-angelaliu-fracflow - Copy/3-parameter data/
+urop-angelaliu-fracflow - Copy/3-parameter data OLD/
+
+# Generated outputs (PDFs, pickles, saved models)
+urop-angelaliu-fracflow - Copy/outputs/
+
+# Claude Code settings
+.claude/
