@@ -10,7 +10,7 @@ Adjmat = sparse([linknods(:,1);linknods(:,2)],...
            [linktrans;linktrans]);
 
 % build weighted graph
-G = graph(linknods(:,1), linknods(:,2), linktrans);
+G = graph(linknods(:,1), linknods(:,2), linktrans, nnode);
 
 % compute shortestpath between each node and the boundary nodes
 % if shortestpath = Inf, node is isolated and does not belong to backbone
@@ -20,7 +20,7 @@ inletnods = find(posnode(:,1) == 0);
 inletdist = Inf*ones(nnode,length(inletnods));
 for iinlet = 1:length(inletnods)
 %     inletdist(:,iinlet) = graphshortestpath(Adjmat,inletnods(iinlet));
-    inletdist(:,iinlet) = distances(G,inletnods(iinlet));
+    inletdist(:,iinlet) = distances(G,inletnods(iinlet))';
 end
 inletdist = min(inletdist,[],2);
 %
@@ -29,7 +29,7 @@ outletnods = find(posnode(:,1) == Lx);
 outletdist = Inf*ones(nnode,length(outletnods));
 for ioutlet = 1:length(outletnods)
 %     outletdist(:,ioutlet) = graphshortestpath(Adjmat,outletnods(ioutlet));
-    outletdist(:,ioutlet) = distances(G,outletnods(ioutlet));
+    outletdist(:,ioutlet) = distances(G,outletnods(ioutlet))';
 end
 outletdist = min(outletdist,[],2);
 %

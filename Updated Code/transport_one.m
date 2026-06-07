@@ -1,6 +1,6 @@
 function [npath,tpath] = ...
     transport_one(linkflow,linkvel,linknods,posnode,...
-    conninletnods,conninletlinks,connoutletnods,tol)
+    conninletnods,conninletlinks,connoutletnods,tol, timeout)
 
 % initialize path: nodes and times
 npath = [];
@@ -11,7 +11,7 @@ tpath = [];
 qq_in = linkflow(conninletlinks);
 QQ_in = cumsum(qq_in)/sum(qq_in);
 P = rand();
-idx = find(QQ_in > P);
+idx = find(QQ_in >= P);
 n_inlet = conninletnods(idx(1));
 
 % place the particle at inlet node
@@ -44,7 +44,7 @@ while keepgoing ~= 0
     qq_out = neighflows.*(neighflows>0);
     QQ_out = cumsum(qq_out)/sum(qq_out);
     P = rand();
-    idx = find(QQ_out > P);
+    idx = find(QQ_out >= P);
     link_out = neighlinks(idx(1));
     
     % determine new node and transition time
@@ -63,6 +63,8 @@ while keepgoing ~= 0
     
     % stop if new node is at outlet, otherwise continue
     if ~isempty(find(connoutletnods == ntp1))
+        keepgoing = 0;
+    elseif tpath(it+1) > timeout
         keepgoing = 0;
     else
         it = it+1;

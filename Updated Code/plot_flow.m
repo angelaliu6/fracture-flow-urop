@@ -11,7 +11,7 @@ axis([0 Lx 0 Ly])
 %
 maxlinewidth = 4;
 linkwidth = abs(linkflow)/max(linkflow)*maxlinewidth;
-for ilink = 1:length(linknods)
+for ilink = 1:length(linkflow)
     if abs(linkflow(ilink)) > tol
         plot(posnode(linknods(ilink,:),1),posnode(linknods(ilink,:),2),...
             'k-','LineWidth',linkwidth(ilink))

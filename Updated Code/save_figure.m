@@ -1,7 +1,4 @@
-function save_figure(figno,figname)
-
-% save figure
-figure(figno)
-set(gcf,'PaperPosition',[1 1 6 3])
-print(gcf,'-dpng','-r600',[figname,'.png'])
-% print(gcf,'-depsc','-loose',[figname,'.eps'])
+function save_figure(figno, foldername, figname)
+    fig = figure(figno);
+    set(fig,'PaperPosition',[1 1 6 3])
+    print(fig,'-dpdf','-loose',fullfile(foldername, [char(figname),'.pdf']))

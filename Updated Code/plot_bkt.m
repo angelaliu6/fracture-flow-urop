@@ -4,9 +4,11 @@ function plot_bkt(figno,tpaths)
 figure(figno)
 %
 Np = length(tpaths);
-t_bkt = zeros(Np,1);
+t_bkt = [];
 for ip = 1:Np
-    t_bkt(ip) = tpaths{ip}(end);
+    if ~isempty(tpaths{ip})
+        t_bkt(end+1) = tpaths{ip}(end);
+    end
 end
 histogram(log10(t_bkt))
 ax = gca;
