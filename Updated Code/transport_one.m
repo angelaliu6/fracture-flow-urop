@@ -65,6 +65,7 @@ while keepgoing ~= 0
     if ~isempty(find(connoutletnods == ntp1))
         keepgoing = 0;
     elseif tpath(it+1) > timeout
+        tpath(it+1) = timeout;
         keepgoing = 0;
     else
         it = it+1;

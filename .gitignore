@@ -14,9 +14,13 @@
 # Raw simulation output data (too large for git)
 urop-angelaliu-fracflow - Copy/3-parameter data/
 urop-angelaliu-fracflow - Copy/3-parameter data OLD/
+3-parameter data/
+3-parameter data OLD/
+Updated Code/transport/
 
 # Generated outputs (PDFs, pickles, saved models)
 urop-angelaliu-fracflow - Copy/outputs/
+outputs/
 
 # Claude Code settings
 .claude/

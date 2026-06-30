@@ -1,4 +1,4 @@
-% Flow and Transport through a Fracture Network
+  % Flow and Transport through a Fracture Network
 clear all
 close all
 
@@ -37,7 +37,7 @@ tol = 1e-12;
 ioplot = 1;
 iosave = 0;
 
-
+timeout = 999999
 %% Generate fractures
 %
 seed = 1616917526;
@@ -147,7 +147,7 @@ end
 %% Simulate transport
 [npaths,tpaths] = ...
     simul_transport(linkflow,linkvel,linknods,posnode,...
-    conninletnods,conninletlinks,connoutletnods,tol,Np);
+    conninletnods,conninletlinks,connoutletnods,tol,Np, timeout);
 %
 % plot particle paths
 if ioplot == 1
