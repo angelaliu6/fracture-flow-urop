@@ -1,10 +1,10 @@
-outDir = 'transport';
+outDir = 'transport narrowed param ranges';
 if ~exist(outDir,'dir'); mkdir(outDir); end
 
 Lx = 150; Ly = 50;
 visc = 1e-3; pinlet = 1e5; poutlet = 0; tol = 1e-12; seed = NaN;
 
-num_param_sets = 100;
+num_param_sets = 120;
 num_trials     = 1000;  % trials per param set (each trial runs Np particles)
 Np             = 1000;  % particles per trial
 timeout        = 1e100;
@@ -18,9 +18,9 @@ if exist(outpdf_cdf, 'file'); delete(outpdf_cdf); end
 
 for paramset_idx = 1:num_param_sets
 
-    discspacing  = 1   + (3   - 1  ) * weights(paramset_idx, 1); % [1, 3]
-    length_ratio = 0.1 + (0.5 - 0.1) * weights(paramset_idx, 2); % [0.1, 0.5]
-    b            = 0.01e-3 + (0.3e-3 - 0.01e-3) * weights(paramset_idx, 3); % [0.01e-3, 0.3e-3]
+    discspacing  = 1*weights(paramset_idx, 1) + 2.1*(1 - weights(paramset_idx, 1));  % [1, 2.1]
+    b            = 0.01e-3*weights(paramset_idx, 2) + 0.3e-3*(1 - weights(paramset_idx, 2)); % [0.01e-3, 0.3e-3]
+    length_ratio = 0.3*weights(paramset_idx, 3) + 0.5*(1 - weights(paramset_idx, 3));  % [0.3, 0.5]
 
     lx = length_ratio * Lx;
     ly = length_ratio * Ly;
@@ -68,6 +68,7 @@ for paramset_idx = 1:num_param_sets
     end
     hold off;
     set(gca, 'XScale', 'log', 'YScale', 'log');
+    ylim([1e-3 1]);
     ax = gca;
     ax.XAxis.TickLabelFormat = '10^{%g}';
     xlabel('Breakthrough time (s)');
