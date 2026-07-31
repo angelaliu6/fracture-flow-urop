@@ -1,6 +1,9 @@
 # macOS
 .DS_Store
 
+# Python virtual environment
+.venv/
+
 # MATLAB autosave and data files
 *.asv
 *.mat
