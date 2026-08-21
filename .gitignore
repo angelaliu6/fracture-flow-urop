@@ -24,6 +24,8 @@ Updated Code/transport/
 # Generated outputs (PDFs, pickles, saved models)
 urop-angelaliu-fracflow - Copy/outputs/
 outputs/
+Updated Code/figures/*.png
+Updated Code/figures/captions.md
 
 # Claude Code settings
 .claude/
