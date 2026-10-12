@@ -426,7 +426,7 @@ def make_lambda_sweep():
     fig.set_layout_engine("constrained")
     for ax, grid, title, cbar_label, fmt in zip(
         axes, [e_grid, viol_grid],
-        [r"mean $e$", r"$\partial F/\partial q>0$ violation rate"],
+        [r"mean $e$", r"$\partial F/\partial q>0$ violation rate (median, held-out)"],
         ["mean $e$", "violation rate (%)"],
         ["{:.3f}", "{:.2f}%"],
     ):
