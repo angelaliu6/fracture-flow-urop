@@ -256,7 +256,7 @@ def build_ensemble():
 E, (R_real, paths_, ts_, seed_), TH = build_ensemble()
 D = dict(D=R_real, paths=paths_[:250], ts=ts_[:250], seed=seed_)
 BLUE, ORANGE, INK, MUTE = '#2E6FA7', '#C8622D', '#22303C', '#B9C2C9'
-plt.rcParams.update({'font.size':9,'axes.linewidth':0.7,'xtick.major.width':0.7,
+plt.rcParams.update({'font.size':12,'axes.linewidth':0.9,'xtick.major.width':0.7,
                      'ytick.major.width':0.7,'axes.edgecolor':'#5A6570',
                      'xtick.color':'#5A6570','ytick.color':'#5A6570',
                      'axes.labelcolor':INK,'text.color':INK})
@@ -266,19 +266,19 @@ d,r,b = E['theta']; p0 = float(E['p0']); Lx,Ly = 150.,50.
 pos, ln, Q, bb = R['posnode'], R['linknods'], R['Q'], R['bb']
 bbs, iso = set(bb.tolist()), set(R['iso'].tolist())
 
-fig = plt.figure(figsize=(15.5, 8.2))
-gs = GridSpec(2, 4, figure=fig, hspace=0.40, wspace=0.24, height_ratios=[0.80, 1.0],
+fig = plt.figure(figsize=(16.5, 8.6))
+gs = GridSpec(2, 4, figure=fig, hspace=0.42, wspace=0.30, height_ratios=[0.80, 1.0],
               left=0.052, right=0.985, top=0.885, bottom=0.085)
 
 def dom(ax, ticks=False):
-    ax.set_xlim(-3, Lx+3); ax.set_ylim(-4, 80); ax.set_aspect('equal')
+    ax.set_xlim(-3, Lx+3); ax.set_ylim(-5, 94); ax.set_aspect('equal')
     ax.add_patch(plt.Rectangle((0,0),Lx,Ly,fill=False,ec='#5A6570',lw=0.8,zorder=1))
     if not ticks: ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values(): s.set_visible(False)
 
 def panel(ax, tag, title, dx=-0.015):
-    ax.set_title(f'  {title}', fontsize=9.5, loc='left', pad=6, color=INK)
-    ax.text(dx, 1.045, tag, transform=ax.transAxes, fontsize=11,
+    ax.set_title(f'  {title}', fontsize=14, loc='left', pad=8, color=INK)
+    ax.text(dx, 1.055, tag, transform=ax.transAxes, fontsize=16,
             fontweight='bold', va='top', ha='right', color=INK)
 
 # (a) fractures ------------------------------------------------------------
@@ -291,10 +291,9 @@ ax.add_collection(LineCollection(
     [[(R['yfini'][i,0],R['yfini'][i,1]),(R['yfend'][i,0],R['yfend'][i,1])] for i in range(len(R['yfini']))],
     colors=ORANGE, lw=1.0, zorder=2))
 panel(ax,'a','Fracture realization')
-ax.text(2,74,r'$x$-family, $N_x$ fractures',color=BLUE,fontsize=8.5,va='center')
-ax.text(2,63,r'$y$-family, $N_y$ fractures',color=ORANGE,fontsize=8.5,va='center')
-ax.text(Lx,74,r'$L_x \times L_y = 150 \times 50$ m',fontsize=8.5,color='#5A6570',
-        ha='right',va='center')
+ax.text(2,88,r'$x$-family, $N_x$ fractures',color=BLUE,fontsize=11.5,va='center')
+ax.text(2,73,r'$y$-family, $N_y$ fractures',color=ORANGE,fontsize=11.5,va='center')
+ax.text(2,58,r'$L_x \times L_y = 150 \times 50$ m',fontsize=11.5,color='#5A6570',va='center')
 
 # (b) intersection graph ---------------------------------------------------
 ax = fig.add_subplot(gs[0,1]); dom(ax); ROW1.append(ax)
@@ -308,13 +307,13 @@ ax.scatter(pos[bb,0],pos[bb,1],s=9,c=INK,zorder=5,lw=0)
 inl = np.array(sorted(R['inl_bb']),int); out = np.array(sorted(R['out_bb']),int)
 ax.scatter(pos[inl,0],pos[inl,1],s=42,facecolors='none',edgecolors=BLUE,lw=1.4,zorder=6)
 ax.scatter(pos[out,0],pos[out,1],s=42,facecolors='none',edgecolors=ORANGE,lw=1.4,zorder=6)
-panel(ax,'b','Intersection graph and backbone')
-ax.text(2,74,'backbone',color=INK,fontsize=8.5,va='center')
-ax.text(40,74,'isolated',color='#8A949C',fontsize=8.5,va='center')
-ax.text(76,74,'inlet nodes',color=BLUE,fontsize=8.5,va='center')
-ax.text(120,74,'outlet nodes',color=ORANGE,fontsize=8.5,va='center')
-ax.text(2,63,r'$|\mathcal{V}|=%d$ nodes,  $|\mathcal{E}|=%d$ links,  %d in backbone'
-        %(R['nnode'],R['nlink'],len(bb)),color='#5A6570',fontsize=8.5,va='center')
+panel(ax,'b','Intersection graph')
+ax.text(2,88,r'%d nodes,  %d links,  %d in backbone'%(R['nnode'],R['nlink'],len(bb)),
+        color='#5A6570',fontsize=11.5,va='center')
+ax.text(2,73,'backbone',color=INK,fontsize=11.5,va='center')
+ax.text(62,73,'isolated',color='#8A949C',fontsize=11.5,va='center')
+ax.text(2,58,'inlet nodes',color=BLUE,fontsize=11.5,va='center')
+ax.text(62,58,'outlet nodes',color=ORANGE,fontsize=11.5,va='center')
 
 # (c) flow ------------------------------------------------------------------
 ax = fig.add_subplot(gs[0,2]); dom(ax); ROW1.append(ax)
@@ -328,11 +327,11 @@ ax.add_collection(LineCollection(segs, colors='#7E8992', lw=lws, zorder=2))
 sc = ax.scatter(pos[bb,0],pos[bb,1],s=17,c=R['p'][:len(bb)]/1e5,cmap='Blues',
                 vmin=0,vmax=1,zorder=4,lw=0.25,edgecolors='#5A6570')
 cb = fig.colorbar(sc, ax=ax, fraction=0.028, pad=0.015); CB_C = cb.ax
-cb.set_label(r'$p/p_{\rm in}$', fontsize=8); cb.ax.tick_params(labelsize=7.5); cb.outline.set_visible(False)
-panel(ax,'c','Pressure and flow on the backbone')
-ax.text(2,74,r'line width $\propto |Q_e|$',color='#5A6570',fontsize=8.5,va='center')
-ax.text(2,63,r'total flow rate $Q=%.1f\times10^{-7}$ m$^2$/s'%(R['Qtot']*1e7),
-        color=INK,fontsize=8.5,va='center')
+cb.set_label(r'$p/p_{\rm in}$', fontsize=12); cb.ax.tick_params(labelsize=10.5); cb.outline.set_visible(False)
+panel(ax,'c','Pressure and flow')
+ax.text(2,88,r'line width $\propto |Q_e|$',color='#5A6570',fontsize=11.5,va='center')
+ax.text(2,73,r'$Q=%.1f\times10^{-7}$ m$^2$/s'%(R['Qtot']*1e7),
+        color=INK,fontsize=11.5,va='center')
 
 # (d) transport -------------------------------------------------------------
 ax = fig.add_subplot(gs[0,3]); dom(ax); ROW1.append(ax)
@@ -342,14 +341,14 @@ for p_ in paths[:250]:
 ax.scatter(pos[inl,0],pos[inl,1],s=26,facecolors='none',edgecolors=BLUE,lw=1.1,zorder=6)
 ax.scatter(pos[out,0],pos[out,1],s=26,facecolors='none',edgecolors=ORANGE,lw=1.1,zorder=6)
 panel(ax,'d','Advective particle tracking')
-axi = ax.inset_axes([0.55,0.68,0.43,0.30])
+axi = ax.inset_axes([0.62,0.58,0.36,0.38])
 axi.hist(np.log10(ts), bins=22, color=ORANGE, alpha=0.85, lw=0)
-axi.set_yticks([]); axi.tick_params(labelsize=6.5, length=2)
-axi.set_xlabel(r'$\log_{10} t_{\rm bt}$  (one realization)', fontsize=7, labelpad=1)
+axi.set_yticks([]); axi.tick_params(labelsize=9.5, length=3)
+axi.set_xlabel(r'$\log_{10} t_{\rm bt}$  (one realization)', fontsize=10, labelpad=2)
 for s in ('top','right','left'): axi.spines[s].set_visible(False)
 axi.patch.set_alpha(0.85)
-ax.text(2,71,r'$N_{\rm particle}$ particles,',color='#5A6570',fontsize=8.5,va='center')
-ax.text(2,60,r'flux-weighted routing',color='#5A6570',fontsize=8.5,va='center')
+ax.text(2,88,r'$N_{\rm particle}$ particles,',color='#5A6570',fontsize=11.5,va='center')
+ax.text(2,73,r'flux-weighted',color='#5A6570',fontsize=11.5,va='center')
 
 # (e) ensemble of realizations ---------------------------------------------
 ax = fig.add_subplot(gs[1,0]); ax.set_xticks([]); ax.set_yticks([])
@@ -365,10 +364,10 @@ for i,t in enumerate(TH):
     ax.add_patch(plt.Rectangle((cx+0.06,cy+0.30),0.88,0.40,fill=False,
                  ec=BLUE if conn else MUTE, lw=1.0 if conn else 0.7, zorder=3))
     ax.text(cx+0.5, cy+0.16, 'connected' if conn else 'disconnected', ha='center',
-            fontsize=6.8, color=BLUE if conn else '#8A949C')
+            fontsize=9.5, color=BLUE if conn else '#8A949C')
 panel(ax,'e',r'Ensemble at fixed $\theta$')
-ax.text(0.015,-0.075,r'$N_{\rm network}$ realizations $\rightarrow$ disconnected fraction $p_0 = %.2f$'%p0,
-        transform=ax.transAxes,fontsize=8.5,color='#5A6570')
+ax.text(0.015,-0.075,r'$N_{\rm network}$ realizations $\rightarrow$ $p_0 = %.2f$'%p0,
+        transform=ax.transAxes,fontsize=11.5,color='#5A6570')
 
 # (f) flow-rate distribution -------------------------------------------------
 ax = fig.add_subplot(gs[1,1])
@@ -376,9 +375,9 @@ lq = np.log10(E['Qtots'][E['Qtots']>0])
 ax.hist(lq, bins=34, color=BLUE, alpha=0.85, lw=0)
 ax.set_xlabel(r'$\log_{10} Q$   (m$^2$/s)'); ax.set_ylabel('realizations')
 for s in ('top','right'): ax.spines[s].set_visible(False)
-panel(ax,'f','Total-flow-rate distribution',dx=-0.115)
+panel(ax,'f','Total-flow-rate distribution',dx=-0.16)
 ax.text(0.015,-0.235,r'target of the flow surrogate',transform=ax.transAxes,
-        fontsize=8.5,color='#5A6570')
+        fontsize=11.5,color='#5A6570')
 
 # (g) percentile-time curves --------------------------------------------------
 ax = fig.add_subplot(gs[1,2])
@@ -387,9 +386,9 @@ for row in tq[:160]:
     ax.plot(np.log10(row), qg, color=ORANGE, lw=0.5, alpha=0.16)
 ax.plot(np.log10(np.median(tq,axis=0)), qg, color=INK, lw=1.8, label='median realization')
 ax.set_xlabel(r'$\log_{10} t$   (s)'); ax.set_ylabel(r'percentile $q$')
-ax.set_ylim(0,1); ax.legend(frameon=False, fontsize=8, loc='lower right')
+ax.set_ylim(0,1); ax.legend(frameon=False, fontsize=11.5, loc='lower right')
 for s in ('top','right'): ax.spines[s].set_visible(False)
-panel(ax,'g',r'Breakthrough times $t_q$ per realization',dx=-0.105)
+panel(ax,'g',r'Breakthrough times $t_q$',dx=-0.15)
 
 # (h) empirical F(q, log t) ---------------------------------------------------
 ax = fig.add_subplot(gs[1,3])
@@ -397,31 +396,29 @@ lt = np.log10(tq); grid = np.linspace(lt.min(), lt.max(), 170)
 Fs = np.array([[np.mean(lt[:,j] <= g) for g in grid] for j in range(len(qg))])
 im = ax.pcolormesh(grid, qg, Fs, cmap='viridis', vmin=0, vmax=1, shading='auto', rasterized=True)
 cs = ax.contour(grid, qg, Fs, levels=[0.1,0.5,0.9], colors='white', linewidths=0.8, alpha=0.85)
-ax.clabel(cs, fmt='%.1f', fontsize=6.5, colors='white')
+ax.clabel(cs, fmt='%.1f', fontsize=9.5, colors='white')
 cb = fig.colorbar(im, ax=ax, fraction=0.036, pad=0.015)
-cb.set_label(r'$F(\theta,q,t)$', fontsize=8); cb.ax.tick_params(labelsize=7.5); cb.outline.set_visible(False)
+cb.set_label(r'$F(\theta,q,t)$', fontsize=12); cb.ax.tick_params(labelsize=10.5); cb.outline.set_visible(False)
 ax.set_xlabel(r'$\log_{10} t$   (s)'); ax.set_ylabel(r'percentile $q$')
 for s in ax.spines.values(): s.set_visible(False)
-panel(ax,'h','Breakthrough-time surface',dx=-0.105)
+panel(ax,'h','Breakthrough-time surface',dx=-0.15)
 ax.text(0.015,-0.235,r'target of the transport surrogate',transform=ax.transAxes,
-        fontsize=8.5,color='#5A6570')
+        fontsize=11.5,color='#5A6570')
 
 # headers / flow arrows -------------------------------------------------------
 fig.text(0.052,0.975,r'Input parameters  $\theta = (d,\,r,\,b) = (%.1f\ \mathrm{m},\ %.2f,\ %.2f\times10^{-4}\ \mathrm{m})$'%(d,r,b*1e4),
-         fontsize=11.5, color=INK, va='top')
-fig.text(0.052,0.945,'One realization $\\omega$:  geometry $\\rightarrow$ intersection graph $\\rightarrow$ flow $\\rightarrow$ transport',
-         fontsize=9.5, color='#5A6570', style='italic', va='top')
+         fontsize=15.5, color=INK, va='top')
 fig.text(0.052,0.545,'Across $N_{\\rm network}$ realizations at the same $\\theta$:  the distributions the surrogates are trained to predict',
-         fontsize=9.5, color='#5A6570', style='italic', va='top')
+         fontsize=12.5, color='#5A6570', style='italic', va='top')
 fig.canvas.draw()
 bb1 = [a_.get_position() for a_ in ROW1]
 ymid = bb1[0].y0 + 0.34*bb1[0].height
 for i in range(3):
     x0 = CB_C.get_position().x1 if i == 2 else bb1[i].x1
     x1 = bb1[i+1].x0
-    fig.text(0.5*(x0+x1), ymid, r'$\rightarrow$', fontsize=16, color='#8A949C',
+    fig.text(0.5*(x0+x1), ymid, r'$\rightarrow$', fontsize=21, color='#8A949C',
              ha='center', va='center')
-fig.text(0.016, 0.50, r'repeat $\times\, N_{\rm network}$', fontsize=8.5, color='#8A949C',
+fig.text(0.016, 0.50, r'repeat $\times\, N_{\rm network}$', fontsize=11.5, color='#8A949C',
          rotation=90, va='center', ha='center')
 fig.patches.append(matplotlib.patches.FancyArrowPatch(
     (0.036, 0.62), (0.036, 0.40), transform=fig.transFigure, figure=fig,

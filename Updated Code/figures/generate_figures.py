@@ -20,12 +20,13 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 matplotlib.rcParams.update({
-    "font.size": 14,
-    "axes.titlesize": 17,
-    "axes.labelsize": 15,
-    "legend.fontsize": 12,
-    "xtick.labelsize": 12,
-    "ytick.labelsize": 12,
+    "font.size": 17,
+    "axes.titlesize": 21,
+    "axes.labelsize": 19,
+    "legend.fontsize": 16,
+    "legend.title_fontsize": 16,
+    "xtick.labelsize": 15,
+    "ytick.labelsize": 15,
     "figure.dpi": 150,
 })
 
@@ -149,7 +150,7 @@ def make_fig2(tp, fp):
         ax.plot(lims, lims, "k--", lw=1, alpha=0.6)
         ax.set_xlabel(f"true {name}")
         ax.set_ylabel(f"predicted {name}")
-        ax.set_title(name, fontsize=13)
+        ax.set_title(name, fontsize=16)
 
     ax_transport = fig.add_subplot(gs[:, 4])
     error_pt_df = tp["error_pt_df"]
@@ -157,14 +158,14 @@ def make_fig2(tp, fp):
     true_vals, pred_vals = [], []
     for ps_idx in val_ps:
         disc, lr, b = tp["recover_theta"](tp["weights"][ps_idx])
-        for p in tp["p_vals"]:
-            result = tp["group_ecdf"](ps_idx, p)
+        for q in tp["q_vals"]:
+            result = tp["group_ecdf"](ps_idx, q)
             if result is None:
                 continue
             log_vals, ecdf = result
             X_g = tp["normalize_X"](np.column_stack([
                 np.full(len(log_vals), disc), np.full(len(log_vals), lr), np.full(len(log_vals), b),
-                np.full(len(log_vals), tp["logit"](p)), log_vals,
+                np.full(len(log_vals), tp["logit"](q)), log_vals,
             ])).astype(np.float32)
             F_pred = tp["model_constrained"](X_g, training=False).numpy().squeeze(axis=1)
             true_vals.append(ecdf)
@@ -179,7 +180,7 @@ def make_fig2(tp, fp):
     ax_transport.set_ylabel("predicted $F$ (model_constrained)")
     ax_transport.set_title(f"Transport model: pooled parity\n({len(true_vals)} (theta,q,t) points, {len(val_ps)} held-out param sets)")
 
-    fig.suptitle("Parity: predicted vs. true, held-out param sets", fontsize=19)
+    fig.suptitle("Parity: predicted vs. true, held-out param sets", fontsize=23)
     plt.tight_layout()
     fig.savefig(FIGURES_DIR / "fig2_parity.png", bbox_inches="tight", dpi=130)
     plt.close(fig)
@@ -227,7 +228,7 @@ def impact_of_parameter(tp, fp, sweep_param):
     ax_flow.set_xlabel(r"$\log(Q)$  (network flow rate)")
     ax_flow.set_ylabel("predicted PDF")
     ax_flow.set_title(f"Flow model: predicted log(Q) distribution\n(fixed {', '.join(f'{k}={v:.3g}' for k,v in fixed_flow.items())})")
-    ax_flow.legend(title=PARAM_LABELS[sweep_param], fontsize=10)
+    ax_flow.legend(title=PARAM_LABELS[sweep_param], fontsize=14)
 
     # --- (b) transport model ---
     val_ps = tp["val_ps"]
@@ -236,7 +237,7 @@ def impact_of_parameter(tp, fp, sweep_param):
     fixed_transport = {p: df_theta[p].median() for p in other_params}
     sweep_transport = np.linspace(df_theta[sweep_param].quantile(0.1), df_theta[sweep_param].quantile(0.9), N_SWEEP)
     T_GRID = np.linspace(tp["flat_df"]["logt"].min(), tp["flat_df"]["logt"].max(), 60)
-    Q_GRID = tp["P_GRID"]
+    Q_GRID = tp["Q_GRID"]
     Tm, Qm = np.meshgrid(T_GRID, Q_GRID)
     predict_fn = lambda X: tp["model_constrained"](X, training=False).numpy().squeeze(axis=1)
     for val, color in zip(sweep_transport, sweep_colors):
@@ -258,7 +259,7 @@ def impact_of_parameter(tp, fp, sweep_param):
     cbar = fig.colorbar(sm, ax=ax_transport, shrink=0.6, pad=0.1)
     cbar.set_label(PARAM_LABELS[sweep_param])
 
-    fig.suptitle(f"Impact of {PARAM_LABELS[sweep_param]}", fontsize=19)
+    fig.suptitle(f"Impact of {PARAM_LABELS[sweep_param]}", fontsize=23)
     plt.tight_layout()
     fig_path = FIGURES_DIR / PARAM_FIG_NAMES[sweep_param]
     fig.savefig(fig_path, bbox_inches="tight", dpi=130)
@@ -280,20 +281,71 @@ def make_fig6(tp, fp):
         ax.set_yscale("log")
         ax.set_xlabel(PARAM_LABELS[tcol])
         ax.set_ylabel(r"$w_d$" if col == 0 else "")
-        ax.set_title(f"flow model: $w_d$ vs {PARAM_LABELS[tcol]}", fontsize=12)
+        ax.set_title(f"flow model: $w_d$ vs {PARAM_LABELS[tcol]}", fontsize=15)
 
         ax2 = axes[1, col]
         ax2.scatter(transport_val_df[tcol], transport_val_df["error_score_constrained"], s=22, alpha=0.7, color=COLOR_TRANSPORT)
         ax2.set_yscale("log")
         ax2.set_xlabel(PARAM_LABELS[tcol])
         ax2.set_ylabel("error score $e$" if col == 0 else "")
-        ax2.set_title(f"transport model: $e$ vs {PARAM_LABELS[tcol]}", fontsize=12)
+        ax2.set_title(f"transport model: $e$ vs {PARAM_LABELS[tcol]}", fontsize=15)
 
-    fig.suptitle("Held-out prediction error vs. each theta component", fontsize=19)
+    fig.suptitle("Held-out prediction error vs. each theta component", fontsize=23)
     plt.tight_layout()
     fig.savefig(FIGURES_DIR / "fig6_error_vs_parameters.png", bbox_inches="tight")
     plt.close(fig)
     print("Saved fig6_error_vs_parameters.png")
+
+
+def make_fig7_lambda_sweep():
+    """Heatmaps of the transport model's 2D physics-constraint-weight sweep
+    (lam_t, lam_q) -- reads the cached CSV written by the notebook's
+    lamsweep01 cell (25 retrains, ~8-10 min) rather than re-running the
+    sweep here, so this figure regenerates in seconds."""
+    transport_dir = Path("/Users/angelaliu/Library/CloudStorage/OneDrive-MassachusettsInstituteofTechnology/Fracture Flow UROP/Updated Code/transport")
+    csv_path = transport_dir / "lam_sweep_results.csv"
+    if not csv_path.exists():
+        print(f"Skipping fig7_lambda_sweep.png -- {csv_path} not found "
+              f"(run the notebook's lamsweep01 cell at least once to produce it).")
+        return
+
+    sweep_df = pd.read_csv(csv_path)
+    e_grid = sweep_df.pivot(index="lam_t", columns="lam_q", values="e").values
+    viol_grid = sweep_df.pivot(index="lam_t", columns="lam_q", values="q_viol_rate").values * 100
+    lam_t_vals = sorted(sweep_df["lam_t"].unique())
+    lam_q_vals = sorted(sweep_df["lam_q"].unique())
+
+    best_row = sweep_df.loc[sweep_df["e"].idxmin()]
+
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6.5))
+    for ax, grid, title, cbar_label, fmt in zip(
+        axes, [e_grid, viol_grid],
+        [r"Mean e across parameter sets vs. ($\lambda_t$, $\lambda_q$)", r"$dF/dq>0$ violation rate vs. ($\lambda_t$, $\lambda_q$)"],
+        ["mean e across parameter sets", "violation rate (%)"],
+        ["{:.3f}", "{:.2f}%"],
+    ):
+        im = ax.imshow(grid, cmap=CMAP_SWEEP, aspect="auto")
+        ax.set_xticks(range(len(lam_q_vals)))
+        ax.set_xticklabels(lam_q_vals)
+        ax.set_yticks(range(len(lam_t_vals)))
+        ax.set_yticklabels(lam_t_vals)
+        ax.set_xlabel(r"$\lambda_q$")
+        ax.set_ylabel(r"$\lambda_t$")
+        ax.set_title(title, fontsize=17)
+        text_color_threshold = grid.min() + 0.5 * (grid.max() - grid.min())
+        for i in range(grid.shape[0]):
+            for j in range(grid.shape[1]):
+                color = "black" if grid[i, j] > text_color_threshold else "white"
+                ax.text(j, i, fmt.format(grid[i, j]), ha="center", va="center", color=color, fontsize=14)
+        cbar = fig.colorbar(im, ax=ax)
+        cbar.set_label(cbar_label, fontsize=16)
+
+    fig.suptitle(f"Physics-constraint weight sweep (best: $\\lambda_t$={best_row['lam_t']:g}, "
+                 f"$\\lambda_q$={best_row['lam_q']:g}, e={best_row['e']:.3f})", fontsize=20)
+    plt.tight_layout()
+    fig.savefig(FIGURES_DIR / "fig7_lambda_sweep.png", bbox_inches="tight")
+    plt.close(fig)
+    print("Saved fig7_lambda_sweep.png")
 
 
 if __name__ == "__main__":
@@ -309,4 +361,5 @@ if __name__ == "__main__":
     impact_of_parameter(tp, fp, "discspacing")
     impact_of_parameter(tp, fp, "b")
     make_fig6(tp, fp)
+    make_fig7_lambda_sweep()
     print("All figures generated.")
